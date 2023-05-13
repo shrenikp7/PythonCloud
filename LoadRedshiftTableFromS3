@@ -1,0 +1,30 @@
+
+#### The code is using SQLachemy Python library, 
+#### Code components - Function create_engine from SQLachemy for Redshift+psychopg2, engine.connect() method,
+#### connection URL - redshift+psycopg2
+#### S3 location, S3 access key, S3 secret key, Redshift target table, using the Redshift COPY command, and conection.close 
+
+from sqlalchemy import create_engine
+
+# Create a Redshift database engine
+engine = create_engine('redshift+psycopg2://username:password@hostname:port/database_name')
+
+# Establish a connection
+connection = engine.connect()
+
+# Specify the S3 location of the data file
+s3_location = 's3://bucket_name/path/to/datafile.csv'
+
+# Specify the Redshift table to load the data into
+table_name = 'target_table'
+
+# Generate the COPY command
+copy_command = f"COPY {table_name} FROM '{s3_location}' " \
+               f"CREDENTIALS 'aws_access_key_id=<ACCESS_KEY>;aws_secret_access_key=<SECRET_KEY>' " \
+               "CSV DELIMITER ',' IGNOREHEADER 1;"
+
+# Execute the COPY command
+connection.execute(copy_command)
+
+# Close the connection
+connection.close()
